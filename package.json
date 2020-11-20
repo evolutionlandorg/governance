@@ -1,0 +1,26 @@
+{
+	"name": "governance",
+	"version": "0.1.0",
+	"author": "evolution land",
+	"description": "governance for evolution land",
+	"keywords": [
+		"node.js",
+		"javascript"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/evolutionlandorg/governance.git"
+	},
+	"license": "MIT",
+	"engines": {
+		"node": "14.0.x"
+	},
+	"devDependencies": {
+		"web3": "1.2.11",
+		"@openzeppelin/contracts": "3.1.0-solc-0.7",
+		"readline-sync": "1.4.10"
+	},
+	"dependencies": {
+		"ethereum-waffle": "^3.2.0"
+	}
+}

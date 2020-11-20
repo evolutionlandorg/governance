@@ -1,0 +1,9 @@
+{
+  "ropsten_provider": "https://ropsten.infura.io/v3/cae0d01a9cb945c3be8d289abc787f8f",
+  "rinkeby_provider": "https://rinkeby.infura.io/v3/cae0d01a9cb945c3be8d289abc787f8f",
+  "kovan_provider": "https://kovan.infura.io/v3/cae0d01a9cb945c3be8d289abc787f8f",
+  "mainnet_provider": "https://mainnet.infura.io/v3/cae0d01a9cb945c3be8d289abc787f8f",
+  "key": "0x...",
+  "test01": "0x...",
+  "test02": "0x..."
+}
