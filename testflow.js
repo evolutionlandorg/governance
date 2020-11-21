@@ -71,49 +71,49 @@ const test = async function() {
     const landcontract = api.createContractObj(web3, "./build/MockLand.abi", land_addr);
 
     console.log("init configure");
-    await api.setRewardDistribution(web3, tellercontract);
+	await api.send(web3, tellercontract, 'setRewardDistribution', mainaddress, mainaddress);
     // only test needed
-    await api.addAddress(web3, registrycontract, land_addr);
+	await api.send(web3, registrycontract, 'addAddress', mainaddress, "0x434f4e54524143545f4f424a4543545f4f574e45525348495000000000000000", land_addr);
 
     console.log("transfer token");
-    await api.mint(web3, landcontract);
-    await api.mint(web3, landcontract);
+	await api.send(web3, landcontract, "mint", mainaddress);
+	await api.send(web3, landcontract, "mint", mainaddress);
 
     // send to test address
-    await api.transfer(web3, ktoncontract, address01, _100);
-    await api.transfer(web3, ktoncontract, address02, _100);
-    await api.transfer(web3, landcontract, address01, 1);
+	await api.send(web3, ktoncontract, "transfer", mainaddress, address01, _100);
+	await api.send(web3, ktoncontract, "transfer", mainaddress, address02, _100);
+	await api.send(web3, landcontract, "transfer", mainaddress, address01, 1);
     // approve
     console.log("start to approve");
-    await api.approve(web3, ktoncontract, address01, teller_addr, _100);
-    await api.approve(web3, ktoncontract, address02, teller_addr, _100);
+	await api.send(web3, ktoncontract, "approve", address01, teller_addr, _100);
+	await api.send(web3, ktoncontract, "approve", address02, teller_addr, _100);
 
     // stake
     console.log("start to stake");
-    await api.stake(web3, tellercontract, address01, _10);
-    await api.stake(web3, tellercontract, address02, _100);
+	await api.send(web3, tellercontract, "stake", address01, _10);
+	await api.send(web3, tellercontract, "stake", address02, _100);
 
     console.log("start to get balance");
-    const balance1 = await api.balance(tellercontract, address01);
-    const balance2 = await api.balance(tellercontract, address02);
+	const balance1 = await api.call(tellercontract, "balanceOf", address01);
+	const balance2 = await api.call(tellercontract, "balanceOf", address02);
     //assert(balance1 == balance2/10, "balance verify failed");
 
     console.log("start to reward");
-    await api.approve(web3, rewardcontract, mainaddress, teller_addr, _10000);
-    await api.rewardAmount(web3, tellercontract, _10000);
+	await api.send(web3, rewardcontract, "approve", mainaddress, teller_addr, _10000);
+	await api.send(web3, tellercontract, "rewardAmount", mainaddress, _10000);
 
     console.log("sleep 100 second");
     await sleep(100000);
-    const earned01 = await api.earned(tellercontract, address01);
-    const earned02 = await api.earned(tellercontract, address02);
+	const earned01 = await api.call(tellercontract, "earned", address01);
+	const earned02 = await api.call(tellercontract, "earned", address02);
     //assert(earned01 <= earned02/10 + 1e10 && earned01 >= earned02/10 + 1e10, "earn money verify failed");
 
     // withdraw
     console.log("start to withdraw");
-    await api.withdraw(web3, tellercontract, address01, _10);
-    await api.withdraw(web3, tellercontract, address02, _100);
-    const balance1after = await api.balance(tellercontract, address01);
-    const balance2after = await api.balance(tellercontract, address02);
+	await api.send(web3, tellercontract, "withdraw", address01, _10);
+	await api.send(web3, tellercontract, "withdraw", address02, _100);
+	const balance1after = await api.call(tellercontract, "balanceOf", address01);
+	const balance2after = await api.call(tellercontract, "balanceOf", address02);
     //assert(balance1after == 0, "balance verify failed");
     //assert(balance2after == 0, "balance verify failed");
 }
