@@ -18,7 +18,6 @@ const main = async function() {
     if (contractname == "EvolutionTeller") {
         var registry = readlineSync.question("Please enter the registry contract address\r\n");
         var addr = readlineSync.question("Please enter the staking contract address\r\n");
-        //var reward = readlineSync.question("Please enter the reward address\r\n");
         console.log(`Your select is ${contractname}, and network api ${networkname}`);
         if (!deploy.confirmInfo()) {
             return;
