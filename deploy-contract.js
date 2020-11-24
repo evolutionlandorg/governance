@@ -18,13 +18,13 @@ const main = async function() {
     if (contractname == "EvolutionTeller") {
         var registry = readlineSync.question("Please enter the registry contract address\r\n");
         var addr = readlineSync.question("Please enter the staking contract address\r\n");
-        var reward = readlineSync.question("Please enter the reward address\r\n");
+        //var reward = readlineSync.question("Please enter the reward address\r\n");
         console.log(`Your select is ${contractname}, and network api ${networkname}`);
         if (!deploy.confirmInfo()) {
             return;
         }
         console.log(`start to deploy contract: ${contractname}`);
-        await deploy.deploy(web3, "./build/EvolutionTeller.bin", "./build/EvolutionTeller.abi", [registry, addr, reward])
+        await deploy.deploy(web3, "./build/EvolutionTeller.bin", "./build/EvolutionTeller.abi", [registry, addr])
     } else {
         var addr = readlineSync.question("Please enter the EvolutionTeller address\r\n");
         console.log(`Your select is ${contractname}, and network api ${networkname}, init teller addr ${addr}`);

@@ -4,7 +4,7 @@ api = require("./compile/api.js")
 const assert = require('assert');
 const config = require('./compile/config.json')
 
-const network = config.rinkeby_provider;
+const network = config.ropsten_provider;
 const key =  config.key;
 const web3 = new Web3(network);
 web3.eth.accounts.wallet.add(key);
@@ -42,8 +42,8 @@ const deploy_registry = async function() {
     return await deploy.deploy(web3, "./build/MockRegister.bin", "./build/MockRegister.abi", [])
 }
 
-const deploy_teller = async function(registry_addr, kton_addr, reward_addr) {
-    return await deploy.deploy(web3, "./build/EvolutionTeller.bin", "./build/EvolutionTeller.abi", [registry_addr, kton_addr, reward_addr])
+const deploy_teller = async function(registry_addr, kton_addr) {
+    return await deploy.deploy(web3, "./build/EvolutionTeller.bin", "./build/EvolutionTeller.abi", [registry_addr, kton_addr])
 }
 
 const deploy_proxy = async function(teller_addr) {
@@ -53,25 +53,25 @@ const deploy_proxy = async function(teller_addr) {
 const test = async function() {
     // create kton and reward mock token
     const kton_addr = await deploy_kton();
-    const reward_addr = await deploy_reward();
+    //const reward_addr = await deploy_reward();
 
     // create land and register mock contract
     const land_addr = await deploy_land();
     const registry_addr = await deploy_registry();
 
     // create teller and proxy address
-    const teller_addr = await deploy_teller(registry_addr, kton_addr, reward_addr);
+    const teller_addr = await deploy_teller(registry_addr, kton_addr);
     const proxy_addr = await deploy_proxy(teller_addr);
 
     // init configure
     const ktoncontract = api.createContractObj(web3, "./build/MockKtonToken.abi", kton_addr);
-    const rewardcontract = api.createContractObj(web3, "./build/MockRewardToken.abi", reward_addr);
+    //const rewardcontract = api.createContractObj(web3, "./build/MockRewardToken.abi", reward_addr);
     const tellercontract = api.createContractObj(web3, "./build/EvolutionTeller.abi", teller_addr);
     const registrycontract = api.createContractObj(web3, "./build/MockRegister.abi", registry_addr);
     const landcontract = api.createContractObj(web3, "./build/MockLand.abi", land_addr);
 
     console.log("init configure");
-	await api.send(web3, tellercontract, 'setRewardDistribution', mainaddress, mainaddress);
+	//await api.send(web3, tellercontract, 'setRewardDistribution', mainaddress, mainaddress);
     // only test needed
 	await api.send(web3, registrycontract, 'addAddress', mainaddress, "0x434f4e54524143545f4f424a4543545f4f574e45525348495000000000000000", land_addr);
 
@@ -98,14 +98,14 @@ const test = async function() {
 	const balance2 = await api.call(tellercontract, "balanceOf", address02);
     //assert(balance1 == balance2/10, "balance verify failed");
 
-    console.log("start to reward");
-	await api.send(web3, rewardcontract, "approve", mainaddress, teller_addr, _10000);
-	await api.send(web3, tellercontract, "rewardAmount", mainaddress, _10000);
+    //console.log("start to reward");
+	//await api.send(web3, rewardcontract, "approve", mainaddress, teller_addr, _10000);
+	//await api.send(web3, tellercontract, "rewardAmount", mainaddress, _10000);
 
-    console.log("sleep 100 second");
-    await sleep(100000);
-	const earned01 = await api.call(tellercontract, "earned", address01);
-	const earned02 = await api.call(tellercontract, "earned", address02);
+    //console.log("sleep 100 second");
+    //await sleep(100000);
+	//const earned01 = await api.call(tellercontract, "earned", address01);
+	//const earned02 = await api.call(tellercontract, "earned", address02);
     //assert(earned01 <= earned02/10 + 1e10 && earned01 >= earned02/10 + 1e10, "earn money verify failed");
 
     // withdraw

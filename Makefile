@@ -1,5 +1,5 @@
 
-.PHONY: contract deploy clean flatten
+.PHONY: contract deploy clean flatten test
 
 contract:
 	node compile-with-solc.js

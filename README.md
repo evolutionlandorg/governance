@@ -25,7 +25,6 @@ contracts/SnapshotProxy.sol
 contracts/test/MockRegister.sol
 contracts/test/MockLand.sol
 contracts/test/MockKton.sol
-contracts/test/MockReward.sol
 ```
 
 ## Deploy Contracts
@@ -37,7 +36,7 @@ First, you should edit the configure file `compile/config.json`, and set your ow
 `make deploy`
 
 Follow the steps and deploy the main contracts EvolutionTeller and SnapshotProxy. Test contracts are required if you want to test on rinkeby.
-EvolutionTeller's constructor needs three addresses, first is [SettingsRegistry](https://github.com/evolutionlandorg/common-contracts/blob/master/contracts/SettingsRegistry.sol) address, second is the kton contract address for stake, and the third is reward token address. And SnapshotProxy's constructor needs to be setted by the EvolutionTeller contract address.
+EvolutionTeller's constructor needs two addresses, first is [SettingsRegistry](https://github.com/evolutionlandorg/common-contracts/blob/master/contracts/SettingsRegistry.sol) address, and second is the kton contract address for stake. And SnapshotProxy's constructor needs to be setted by the EvolutionTeller contract address.
 
 #### Configure
 ##### For contract EvolutionTeller
@@ -46,8 +45,6 @@ EvolutionTeller's constructor needs three addresses, first is [SettingsRegistry]
 `function setLock(uint256 _lock)`
 * set land vote rate, this is the additional vote power for landlord
 `function setLandVoteRate(uint256 _landVoteRate)`
-* set reward distribution, only distributor has the right to reward
-`function setRewardDistribution(address _rewardDistribution)`
 
 ##### For contract SnapshotProxy
 * set teller if the teller address changed
