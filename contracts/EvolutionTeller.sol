@@ -3,7 +3,8 @@ pragma solidity ^0.7.1;
 
 import "./LPTokenWrapper.sol";
 import "./interfaces/ISettingsRegistry.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "./interfaces/IInterstellarEncoder.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract EvolutionTeller is LPTokenWrapper, Ownable {
@@ -14,9 +15,12 @@ contract EvolutionTeller is LPTokenWrapper, Ownable {
     uint256 public lock = 0;
 
     ISettingsRegistry public registry;
-    uint256 landVoteRate = 100 ether;
+    uint256 public landVoteRate = 100 ether;
+    uint256 public apostleVoteRate = 1 ether;
+    uint256 public tokenVoteRate = 10;
     //"0x434f4e54524143545f4f424a4543545f4f574e45525348495000000000000000"
     bytes32 public constant CONTRACT_OBJECT_OWNERSHIP = "CONTRACT_OBJECT_OWNERSHIP";
+    bytes32 public constant CONTRACT_INTERSTELLAR_ENCODER = "CONTRACT_INTERSTELLAR_ENCODER";
 
     bool private withdrawProtected = false;
 
@@ -57,11 +61,26 @@ contract EvolutionTeller is LPTokenWrapper, Ownable {
         emit Withdrawn(msg.sender, amount);
     }
 
-    function balanceOfLandOwner(address account) public view returns (uint256) {
+    function balanceOfOwnerShip(address account, IInterstellarEncoder.ObjectClass objectClass) internal view returns (uint256) {
         address objectOwnership = registry.addressOf(CONTRACT_OBJECT_OWNERSHIP);
-        uint256 length = IERC721(objectOwnership).balanceOf(account);
-        
-        return landVoteRate.mul(length);
+        address interstellarEncoder = registry.addressOf(CONTRACT_INTERSTELLAR_ENCODER);
+        uint256 length = ERC721(objectOwnership).balanceOf(account);
+        uint256 balance = 0;
+        for(uint i = 0; i < length; i++) {
+            uint256 tokenId = ERC721(objectOwnership).tokenOfOwnerByIndex(account, i);
+            if (IInterstellarEncoder(interstellarEncoder).getObjectClass(tokenId) == uint8(objectClass)) {
+                balance = balance.add(1);
+            }
+        }
+        return balance;
+    }
+
+    function balanceOfLandOwner(address account) public view returns (uint256) {
+        return balanceOfOwnerShip(account, IInterstellarEncoder.ObjectClass.LAND);
+    }
+
+    function balanceOfApostleOwner(address account) public view returns (uint256) {
+        return balanceOfOwnerShip(account, IInterstellarEncoder.ObjectClass.APOSTLE);
     }
 
 	function BalanceOfStaking(address account) external view returns (uint256) {
@@ -69,7 +88,9 @@ contract EvolutionTeller is LPTokenWrapper, Ownable {
 	}
 
     function balanceOf(address account) public view override returns (uint256) {
-        return super.balanceOf(account).add(balanceOfLandOwner(account));
+        return (super.balanceOf(account).mul(tokenVoteRate))
+        .add(balanceOfLandOwner(account).mul(landVoteRate))
+        .add(balanceOfApostleOwner(account).mul(apostleVoteRate));
     }
 }
 
