@@ -49,7 +49,7 @@ const test = async function() {
     const proxycontract = api.createContractObj(web3, "./build/EvolutionTeller.abi", proxy_addr);
 
     console.log("init configure");
-    await api.send(web3, proxycontract, 'setRewardDistribution', mainaddress, mainaddress);
+    await api.send(web3, proxycontract, 'addRewardDistribution', mainaddress, mainaddress);
     // only test needed
     await api.send(web3, registrycontract, 'addAddress', mainaddress, "0x434f4e54524143545f4f424a4543545f4f574e45525348495000000000000000", ownership_addr);
     await api.send(web3, registrycontract, 'addAddress', mainaddress, "0x434f4e54524143545f494e5445525354454c4c41525f454e434f444552000000", encoder_addr);

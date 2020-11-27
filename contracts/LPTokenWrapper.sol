@@ -22,20 +22,20 @@ contract LPTokenWrapper {
         return _totalSupply;
     }
 
-    function balanceOf(address account) public view virtual returns (uint256) {
-        return _balances[account];
+    function balanceOf(address _account) public view virtual returns (uint256) {
+        return _balances[_account];
     }
 
-    function stake(uint256 amount) public virtual {
-        _totalSupply = _totalSupply.add(amount);
-        _balances[msg.sender] = _balances[msg.sender].add(amount);
-        vote.safeTransferFrom(msg.sender, address(this), amount);
+    function stake(uint256 _amount) public virtual {
+        _totalSupply = _totalSupply.add(_amount);
+        _balances[msg.sender] = _balances[msg.sender].add(_amount);
+        vote.safeTransferFrom(msg.sender, address(this), _amount);
     }
 
-    function withdraw(uint256 amount) public virtual {
-        _totalSupply = _totalSupply.sub(amount);
-        _balances[msg.sender] = _balances[msg.sender].sub(amount);
-        vote.safeTransfer(msg.sender, amount);
+    function withdraw(uint256 _amount) public virtual {
+        _totalSupply = _totalSupply.sub(_amount);
+        _balances[msg.sender] = _balances[msg.sender].sub(_amount);
+        vote.safeTransfer(msg.sender, _amount);
     }
 }
 

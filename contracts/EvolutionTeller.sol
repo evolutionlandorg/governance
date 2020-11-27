@@ -22,7 +22,7 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
     uint256 public landVoteRate;
     uint256 public apostleVoteRate;
     uint256 public tokenVoteRate;
-    bool private withdrawProtected;
+    bool private _withdrawProtected;
 
     //event
     event Staked(address indexed account, uint256 amount);
@@ -33,7 +33,7 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
         landVoteRate = 100;
         apostleVoteRate = 1;
         tokenVoteRate = 10;
-        withdrawProtected = false;
+        _withdrawProtected = false;
         initReward(_voter, _reward);
     }
     
@@ -55,23 +55,23 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
 
     // if lock too long or we have some other bugs
     function protectWithdraw() onlyOwner external {
-        withdrawProtected = true;
+        _withdrawProtected = true;
     }
 
-    function stake(uint256 amount) public updateReward(msg.sender) override {
-        require(amount > 0, "Cannot stake 0");
+    function stake(uint256 _amount) public updateReward(msg.sender) override {
+        require(_amount > 0, "Cannot stake 0");
         stakingLock[msg.sender] = lock.add(block.number);
-        super.stake(amount);
-        emit Staked(msg.sender, amount);
+        super.stake(_amount);
+        emit Staked(msg.sender, _amount);
     }
 
-    function withdraw(uint256 amount) public updateReward(msg.sender) override {
-        require(amount > 0, "Cannot withdraw 0");
-        if (!withdrawProtected) {
+    function withdraw(uint256 _amount) public updateReward(msg.sender) override {
+        require(_amount > 0, "Cannot withdraw 0");
+        if (!_withdrawProtected) {
             require(stakingLock[msg.sender] < block.number,"!locked");
         }
-        super.withdraw(amount);
-        emit Withdrawn(msg.sender, amount);
+        super.withdraw(_amount);
+        emit Withdrawn(msg.sender, _amount);
     }
 
     function withdrawWithReward() external {
@@ -79,36 +79,36 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
         getReward();
     }
 
-    function balanceOfOwnerShip(address account, IInterstellarEncoder.ObjectClass objectClass) internal view returns (uint256) {
+    function balanceOfOwnerShip(address _account, IInterstellarEncoder.ObjectClass _objectClass) internal view returns (uint256) {
         address objectOwnership = registry.addressOf(CONTRACT_OBJECT_OWNERSHIP);
         address interstellarEncoder = registry.addressOf(CONTRACT_INTERSTELLAR_ENCODER);
-        uint256 length = ERC721(objectOwnership).balanceOf(account);
+        uint256 length = ERC721(objectOwnership).balanceOf(_account);
         uint256 balance = 0;
         for(uint i = 0; i < length; i++) {
-            uint256 tokenId = ERC721(objectOwnership).tokenOfOwnerByIndex(account, i);
-            if (IInterstellarEncoder(interstellarEncoder).getObjectClass(tokenId) == uint8(objectClass)) {
+            uint256 tokenId = ERC721(objectOwnership).tokenOfOwnerByIndex(_account, i);
+            if (IInterstellarEncoder(interstellarEncoder).getObjectClass(tokenId) == uint8(_objectClass)) {
                 balance = balance.add(1);
             }
         }
         return balance;
     }
 
-    function balanceOfLandOwner(address account) public view returns (uint256) {
-        return balanceOfOwnerShip(account, IInterstellarEncoder.ObjectClass.LAND);
+    function balanceOfLandOwner(address _account) public view returns (uint256) {
+        return balanceOfOwnerShip(_account, IInterstellarEncoder.ObjectClass.LAND);
     }
 
-    function balanceOfApostleOwner(address account) public view returns (uint256) {
-        return balanceOfOwnerShip(account, IInterstellarEncoder.ObjectClass.APOSTLE);
+    function balanceOfApostleOwner(address _account) public view returns (uint256) {
+        return balanceOfOwnerShip(_account, IInterstellarEncoder.ObjectClass.APOSTLE);
     }
 
-    function BalanceOfStaking(address account) external view returns (uint256) {
-        return super.balanceOf(account);
+    function BalanceOfStaking(address _account) external view returns (uint256) {
+        return super.balanceOf(_account);
     }
 
-    function balanceOf(address account) public view override returns (uint256) {
-        return (super.balanceOf(account).mul(tokenVoteRate))
-        .add(balanceOfLandOwner(account).mul(landVoteRate).mul(1 ether))
-        .add(balanceOfApostleOwner(account).mul(apostleVoteRate).mul(1 ether));
+    function balanceOf(address _account) public view override returns (uint256) {
+        return (super.balanceOf(_account).mul(tokenVoteRate))
+        .add(balanceOfLandOwner(_account).mul(landVoteRate).mul(1 ether))
+        .add(balanceOfApostleOwner(_account).mul(apostleVoteRate).mul(1 ether));
     }
 }
 

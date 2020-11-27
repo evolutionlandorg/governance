@@ -78,8 +78,11 @@ const main = async function() {
         case 3: //proxy
             var logic = readlineSync.question("Please enter the EvolutionTeller address\r\n");
             var admin = readlineSync.question("Please enter the admin contract address\r\n");
+            // ropsten 0x6982702995b053A21389219c1BFc0b188eB5a372
             var registry = readlineSync.question("Please enter the registry contract address\r\n");
+            // kton 0x1994100c58753793D52c6f457f189aa3ce9cEe94
             var addr = readlineSync.question("Please enter the kton contract address\r\n");
+            // ring 0xb52FBE2B925ab79a821b261C82c5Ba0814AAA5e0
             var reward = readlineSync.question("Please enter the reward contract address\r\n");
             var calldata = deploy.callData(web3, contracts[0].abi, logic, "initialize", registry, addr, reward);
             params = [logic, admin, calldata];
