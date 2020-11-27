@@ -1,22 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.7.1;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/ITeller.sol";
+import "@openzeppelin/contracts/proxy/TransparentUpgradeableProxy.sol";
 
-contract SnapshotProxy is Ownable {
-    address public teller;
-
-    constructor(address addr) {
-        teller = addr;
-    }
-
-    function balanceOf(address account) external view returns (uint256) {
-        return ITeller(teller).balanceOf(account);
-    }
-
-    function setTeller(address addr) external onlyOwner {
-        teller = addr;
-    }
+contract SnapshotProxy is TransparentUpgradeableProxy {
+	constructor(
+		address _logic,
+		address _admin,
+		bytes memory _data
+	) public payable TransparentUpgradeableProxy(_logic, _admin, _data) {}
 }
-

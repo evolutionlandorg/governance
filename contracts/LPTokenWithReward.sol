@@ -2,7 +2,7 @@
 pragma solidity ^0.7.1;
 
 import "./LPTokenWrapper.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 
 contract LPTokenWithReward is LPTokenWrapper, Ownable {
@@ -14,10 +14,10 @@ contract LPTokenWithReward is LPTokenWrapper, Ownable {
 
     // 604800 seconds
     uint256 public constant DURATION = 7 days;
-    uint256 public rewardRate = 0;
-    uint256 public rewardPerTokenStored = 0;
-    uint256 public lastUpdateTime = 0;
-    uint256 public periodEnd = 0;
+    uint256 public rewardRate;
+    uint256 public rewardPerTokenStored;
+    uint256 public lastUpdateTime;
+    uint256 public periodEnd;
     mapping(address => uint256) public userRewardPerTokenPaid;
     mapping(address => uint256) public rewards;
 
@@ -25,8 +25,10 @@ contract LPTokenWithReward is LPTokenWrapper, Ownable {
     event RewardAdded(uint256 reward);
     event RewardPaid(address indexed account, uint256 reward);
 
-    constructor(address _vote, address _reward) LPTokenWrapper(_vote) {
+    function initReward(address _vote, address _reward) public {
         token = IERC20(_reward);
+        _owner = msg.sender;
+        initLPToken(_vote);
     }
 
     function setRewardDistribution(address _rewardDistribution) external onlyOwner {
@@ -34,7 +36,7 @@ contract LPTokenWithReward is LPTokenWrapper, Ownable {
     }
 
     modifier onlyRewardDistribution() {
-        require(_msgSender() == rewardDistribution, "Caller is not reward distribution");
+        require(msg.sender == rewardDistribution, "Caller is not reward distribution");
         _;
     }
     

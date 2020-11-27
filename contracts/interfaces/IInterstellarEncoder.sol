@@ -10,5 +10,4 @@ interface IInterstellarEncoder {
         OBJECT_CLASS_COUNT
     }
     function getObjectClass(uint256 _tokenId) external view returns (uint8);
-    function getObjectAddress(uint256 _tokenId) external view returns (address);
 }

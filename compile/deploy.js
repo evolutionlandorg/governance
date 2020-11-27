@@ -28,6 +28,13 @@ var m = {
         return deployment.options.address
     },
 
+    callData: function(web3, abi, address, func, ...params) {
+        const abistream = fs.readFileSync(abi).toString();
+        const jsonabi = JSON.parse(abistream);
+        var contract = new web3.eth.Contract(jsonabi, address);
+        return contract.methods.initialize(...params).encodeABI();
+    },
+
     confirmInfo: function() {
         const confirmed = readlineSync.question("Be sure to deploy(y/N)?");
         if (confirmed != "y") {
