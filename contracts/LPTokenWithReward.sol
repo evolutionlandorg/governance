@@ -24,7 +24,7 @@ contract LPTokenWithReward is LPTokenWrapper, Ownable {
     event RewardAdded(uint256 reward);
     event RewardPaid(address indexed account, uint256 reward);
 
-    function initReward(address _vote, address _reward) public {
+    function initReward(address _vote, address _reward) internal {
         token = IERC20(_reward);
         _owner = msg.sender;
         addRewardDistribution(_owner);

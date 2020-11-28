@@ -14,7 +14,7 @@ contract LPTokenWrapper {
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
 
-    function initLPToken(address _vote) public {
+    function initLPToken(address _vote) internal {
         vote = IERC20(_vote);
     }
 
