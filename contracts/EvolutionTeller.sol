@@ -54,8 +54,8 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
     }
 
     // if lock too long or we have some other bugs
-    function protectWithdraw() onlyOwner external {
-        _withdrawProtected = true;
+    function protectWithdraw(bool _protected) onlyOwner external {
+        _withdrawProtected = _protected;
     }
 
     function stake(uint256 _amount) public updateReward(msg.sender) override {
