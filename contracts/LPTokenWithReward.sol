@@ -103,5 +103,8 @@ contract LPTokenWithReward is LPTokenWrapper, Ownable {
         periodEnd = block.timestamp.add(DURATION);
         emit RewardAdded(_amount);
     }
-}
 
+    function checkRewardAvailable(address _token) external view returns(bool) {
+        return rewardDistributions[msg.sender] == true && _token == address(token);
+    }
+}

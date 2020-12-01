@@ -101,24 +101,37 @@ main();
 
 // debug mock test
 const deployTest = async function () {
-    const web3 = new Web3(networks[0].provider);
+    const web3 = new Web3(networks[1].provider);
     const key =  config.key;
     web3.eth.accounts.wallet.add(key);
     const _1e8 = web3.utils.toHex("0x52b7d2dcc80cd2e4000000");
-    // 0x3E2A9d5894aE342dbB71E5eFeAb26da8524c7C5d
+    // 0x6B1CbD582111F9E9941E0b8aBE9Be844048fc4C6
     await deploy.deploy(web3, "./build/MockKtonToken.bin", "./build/MockKtonToken.abi", [_1e8]);
-    // 0xDf88f57f1d25DB669E68198aDB54E70ba417bA49
+    // 0x5Dff1322f066187708fFa544b9a6b32Fbb464dBA
     await deploy.deploy(web3, "./build/MockInterstellarEncoder.bin", "./build/MockInterstellarEncoder.abi", []);
-    // 0x41A99c8F18C1f27EBdb6606bd37913eE91D56bDC
+    // 0x00eBE3C02ce0a65efBe7BDDF056641eA46Ba200E
     await deploy.deploy(web3, "./build/MockOwnership.bin", "./build/MockOwnership.abi", []);
-    // 0xB18fa9e125461430b2D28Aef6e4295EEF41bA795
+    // 0x7Cc40c5aC89aF12367e124CfB7a2A34F6CEC265A
     await deploy.deploy(web3, "./build/MockRegister.bin", "./build/MockRegister.abi", []);
-    // 0x1C1e09E05CCa54E722657C1e0bC521DE08E4E6e7
+    // 0xcfcad1252B8FE36079BEe14c5401f0f41eB0332f
     await deploy.deploy(web3, "./build/MockRewardToken.bin", "./build/MockRewardToken.abi", [_1e8]);
 }
 
-// 0x65651789440c2057Ed1dEC6A7F0a0fAc999620C7
-// 0xBEA5c3d111d6A60C64025f665A78B38B3c38857D
-// 0x1ADC39eb5034CE2B9f8C584A951994113b03239F
+// rinkeby
+// 0x22C3adf4CF1f91716da0129A86A75Fc39DdC31a1
+// 0x85422da798241fF8f8962eCac886C37bc0D560fa
+// 0x83F3BeDb84CAc95E0E5C3ef6D20DB4B8Bc434D35
 
 //deployTest()
+
+// deploy json from truffle
+const deployJsonTest = async function() {
+    const web3 = new Web3(networks[1].provider);
+    const key =  config.key;
+    web3.eth.accounts.wallet.add(key);
+    const jfile = require("./build/RevenuePool.json");
+    await deploy.deployJson(web3, jfile, []);
+}
+//0x047901b3160FbD7AB5bb927fa9531727ffE95e1B
+
+//deployJsonTest();
