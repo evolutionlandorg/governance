@@ -19,9 +19,15 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
     mapping(address => uint) public stakingLock;
     uint256 public lock;
     ISettingsRegistry public registry;
+    // The voting power contributions are from land, apostle and staking token.
+    // 1 LAND <=> landVoteRate(100) * unit(1ether) VP
     uint256 public landVoteRate;
+    // 1 APOSTLE <=> apostleVoteRate(1) * unit(1ether) VP
     uint256 public apostleVoteRate;
+    // 1 TOKEN <=> tokenVoteRate(10) * unit(1) VP
     uint256 public tokenVoteRate;
+
+    // if true players can withdraw without any condition from lock duration
     bool private _withdrawProtected;
 
     //event
@@ -101,7 +107,7 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
         return balanceOfOwnerShip(_account, IInterstellarEncoder.ObjectClass.APOSTLE);
     }
 
-    function BalanceOfStaking(address _account) external view returns (uint256) {
+    function balanceOfStaking(address _account) external view returns (uint256) {
         return super.balanceOf(_account);
     }
 
