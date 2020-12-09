@@ -16,7 +16,7 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
     //"0x434f4e54524143545f494e5445525354454c4c41525f454e434f444552000000"
     bytes32 public constant CONTRACT_INTERSTELLAR_ENCODER = "CONTRACT_INTERSTELLAR_ENCODER";
 
-    mapping(address => uint) public stakingLock;
+    mapping(address => uint256) public stakingLock;
     uint256 public lock;
     ISettingsRegistry public registry;
     // The voting power contributions are from land, apostle and staking token.
@@ -66,7 +66,7 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
 
     function stake(uint256 _amount) public updateReward(msg.sender) override {
         require(_amount > 0, "Cannot stake 0");
-        stakingLock[msg.sender] = lock.add(block.number);
+        stakingLock[msg.sender] = lock.add(block.timestamp);
         super.stake(_amount);
         emit Staked(msg.sender, _amount);
     }
@@ -74,7 +74,7 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
     function withdraw(uint256 _amount) public updateReward(msg.sender) override {
         require(_amount > 0, "Cannot withdraw 0");
         if (!_withdrawProtected) {
-            require(stakingLock[msg.sender] < block.number,"!locked");
+            require(stakingLock[msg.sender] < block.timestamp,"!locked");
         }
         super.withdraw(_amount);
         emit Withdrawn(msg.sender, _amount);
