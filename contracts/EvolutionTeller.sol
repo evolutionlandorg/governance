@@ -27,9 +27,6 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
     // 1 TOKEN <=> tokenVoteRate(10) * unit(1) VP
     uint256 public tokenVoteRate;
 
-    // if true players can withdraw without any condition from lock duration
-    bool private _withdrawProtected;
-
     //event
     event Staked(address indexed account, uint256 amount);
     event Withdrawn(address indexed account, uint256 amount);
@@ -39,7 +36,6 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
         landVoteRate = 100;
         apostleVoteRate = 1;
         tokenVoteRate = 10;
-        _withdrawProtected = false;
         initReward(_voter, _reward);
     }
     
@@ -59,11 +55,6 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
         tokenVoteRate = _tokenVoteRate;
     }
 
-    // if lock too long or we have some other bugs
-    function protectWithdraw(bool _protected) onlyOwner external {
-        _withdrawProtected = _protected;
-    }
-
     function stake(uint256 _amount) public updateReward(msg.sender) override {
         require(_amount > 0, "Cannot stake 0");
         stakingLock[msg.sender] = lock.add(block.timestamp);
@@ -73,9 +64,7 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
 
     function withdraw(uint256 _amount) public updateReward(msg.sender) override {
         require(_amount > 0, "Cannot withdraw 0");
-        if (!_withdrawProtected) {
-            require(stakingLock[msg.sender] < block.timestamp,"!locked");
-        }
+        require(stakingLock[msg.sender] < block.timestamp,"!locked");
         super.withdraw(_amount);
         emit Withdrawn(msg.sender, _amount);
     }
