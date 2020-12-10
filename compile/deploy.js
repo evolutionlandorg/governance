@@ -28,6 +28,31 @@ var m = {
         return deployment.options.address
     },
 
+    deployJson: async function(web3, jsonfile, args) {
+        console.log('start to deploy contract with json file');
+        const walletAddress = web3.eth.accounts.wallet[0].address;
+        const abi = jsonfile.abi;
+        const bytecode = jsonfile.bytecode;
+        const contract = new web3.eth.Contract(abi);
+        const deployment = await contract.deploy({
+            data: bytecode, arguments: args
+        }).send({
+            from: walletAddress,
+            gasLimit: web3.utils.toHex(6000000),
+            gasPriceLimit: web3.utils.toHex(60000000000)
+        });
+        console.log('contract was successfully deployed!');
+        console.log(`The contract can be interfaced with at this address: ${deployment.options.address}`);
+        return deployment.options.address
+    },
+
+    callData: function(web3, abi, address, func, ...params) {
+        const abistream = fs.readFileSync(abi).toString();
+        const jsonabi = JSON.parse(abistream);
+        var contract = new web3.eth.Contract(jsonabi, address);
+        return contract.methods.initialize(...params).encodeABI();
+    },
+
     confirmInfo: function() {
         const confirmed = readlineSync.question("Be sure to deploy(y/N)?");
         if (confirmed != "y") {

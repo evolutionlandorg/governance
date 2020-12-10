@@ -2,22 +2,21 @@
 pragma solidity ^0.7.1;
 
 import "./LPTokenWrapper.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 
 contract LPTokenWithReward is LPTokenWrapper, Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    address rewardDistribution;
     IERC20 public token;
-
+    mapping (address => bool) public rewardDistributions;
     // 604800 seconds
     uint256 public constant DURATION = 7 days;
-    uint256 public rewardRate = 0;
-    uint256 public rewardPerTokenStored = 0;
-    uint256 public lastUpdateTime = 0;
-    uint256 public periodEnd = 0;
+    uint256 public rewardRate;
+    uint256 public rewardPerTokenStored;
+    uint256 public lastUpdateTime;
+    uint256 public periodEnd;
     mapping(address => uint256) public userRewardPerTokenPaid;
     mapping(address => uint256) public rewards;
 
@@ -25,41 +24,48 @@ contract LPTokenWithReward is LPTokenWrapper, Ownable {
     event RewardAdded(uint256 reward);
     event RewardPaid(address indexed account, uint256 reward);
 
-    constructor(address _vote, address _reward) LPTokenWrapper(_vote) {
+    function initReward(address _vote, address _reward) internal {
         token = IERC20(_reward);
-    }
-
-    function setRewardDistribution(address _rewardDistribution) external onlyOwner {
-        rewardDistribution = _rewardDistribution;
+        _owner = msg.sender;
+        addRewardDistribution(_owner);
+        initLPToken(_vote);
     }
 
     modifier onlyRewardDistribution() {
-        require(_msgSender() == rewardDistribution, "Caller is not reward distribution");
+        require(rewardDistributions[msg.sender] == true, "Caller is not reward distribution");
         _;
     }
+
+    function addRewardDistribution (address _address) public onlyOwner{
+        rewardDistributions[_address] = true;
+    }
     
-    // any other erc20 tokens
-    function seize(IERC20 _token, uint amount) onlyOwner external {
-        require(_token != token, "reward");
-        require(_token != vote, "vote");
-        _token.safeTransfer(owner(), amount);
+    function removeRewardDistribution (address _address) public onlyOwner{
+        rewardDistributions[_address] = false;
     }
 
-    modifier updateReward(address account) {
+    // any other erc20 tokens
+    function seize(IERC20 _token, uint _amount) onlyOwner external {
+        require(_token != token, "reward");
+        require(_token != vote, "vote");
+        _token.safeTransfer(owner(), _amount);
+    }
+
+    modifier updateReward(address _account) {
         rewardPerTokenStored = rewardPerToken();
         lastUpdateTime = Math.min(block.timestamp, periodEnd);
-        if (account != address(0)) {
-            rewards[account] = earned(account);
-            userRewardPerTokenPaid[account] = rewardPerTokenStored;
+        if (_account != address(0)) {
+            rewards[_account] = earned(_account);
+            userRewardPerTokenPaid[_account] = rewardPerTokenStored;
         }
         _;
     }
 
-    function earned(address account) public view returns (uint256) {
-        return super.balanceOf(account)
-        .mul(rewardPerToken().sub(userRewardPerTokenPaid[account]))
+    function earned(address _account) public view returns (uint256) {
+        return super.balanceOf(_account)
+        .mul(rewardPerToken().sub(userRewardPerTokenPaid[_account]))
         .div(1e18)
-        .add(rewards[account]);
+        .add(rewards[_account]);
     }
 
     function rewardPerToken() public view returns (uint256) {
@@ -84,18 +90,21 @@ contract LPTokenWithReward is LPTokenWrapper, Ownable {
         }
     }
 
-    function rewardAmount(uint256 amount) external updateReward(address(0)) onlyRewardDistribution() {
-        token.safeTransferFrom(msg.sender, address(this), amount);
+    function rewardAmount(uint256 _amount) external updateReward(address(0)) onlyRewardDistribution() {
+        token.safeTransferFrom(msg.sender, address(this), _amount);
         if (block.timestamp >= periodEnd) {
-            rewardRate = amount.div(DURATION);
+            rewardRate = _amount.div(DURATION);
         } else {
             uint256 remaining = periodEnd.sub(block.timestamp);
             uint256 leftover = remaining.mul(rewardRate);
-            rewardRate = amount.add(leftover).div(DURATION);
+            rewardRate = _amount.add(leftover).div(DURATION);
         }
         lastUpdateTime = block.timestamp;
         periodEnd = block.timestamp.add(DURATION);
-        emit RewardAdded(amount);
+        emit RewardAdded(_amount);
+    }
+
+    function checkRewardAvailable(address _token) external view returns(bool) {
+        return rewardDistributions[msg.sender] == true && _token == address(token);
     }
 }
-
