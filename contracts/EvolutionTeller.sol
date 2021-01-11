@@ -36,6 +36,7 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
         landVoteRate = 100;
         apostleVoteRate = 1;
         tokenVoteRate = 10;
+        lock = 14 days;
         initReward(_voter, _reward);
     }
     
@@ -70,7 +71,7 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
     }
 
     function withdrawWithReward() external {
-        withdraw(balanceOf(msg.sender));
+        withdraw(super.balanceOf(msg.sender));
         getReward();
     }
 
