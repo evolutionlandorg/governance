@@ -19,4 +19,5 @@ test:
 clean:
 	rm -rf build
 	rm -rf flatten
+	dapp clean
 
