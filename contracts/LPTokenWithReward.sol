@@ -11,8 +11,8 @@ contract LPTokenWithReward is LPTokenWrapper, Ownable {
 
     IERC20 public token;
     mapping (address => bool) public rewardDistributions;
-    // 604800 seconds
-    uint256 public constant DURATION = 7 days;
+
+    uint256 public constant DURATION = 90 days;
     uint256 public rewardRate;
     uint256 public rewardPerTokenStored;
     uint256 public lastUpdateTime;
