@@ -51,6 +51,11 @@ contract LPTokenWithReward is LPTokenWrapper, Ownable {
         _token.safeTransfer(owner(), _amount);
     }
 
+    function setVote(IERC20 _vote) onlyOwner external {
+        require(_vote != vote, "vote");
+        vote = _vote;
+    }
+
     modifier updateReward(address _account) {
         rewardPerTokenStored = rewardPerToken();
         lastUpdateTime = Math.min(block.timestamp, periodEnd);
