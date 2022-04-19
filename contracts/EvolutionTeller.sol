@@ -106,5 +106,19 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
         .add(balanceOfLandOwner(_account).mul(landVoteRate).mul(1 ether))
         .add(balanceOfApostleOwner(_account).mul(apostleVoteRate).mul(1 ether));
     }
+
+    // balanceOf account's Lands and Apostles  [start, end)
+    function balanceOfEVO(address _account, uint start, uint end) public view returns (uint256 lands, uint apostles) {
+        address objectOwnership = registry.addressOf(CONTRACT_OBJECT_OWNERSHIP);
+        address interstellarEncoder = registry.addressOf(CONTRACT_INTERSTELLAR_ENCODER);
+        for(uint i = start; i < end; i++) {
+            uint256 tokenId = ERC721(objectOwnership).tokenOfOwnerByIndex(_account, i);
+            if (IInterstellarEncoder(interstellarEncoder).getObjectClass(tokenId) == uint8(IInterstellarEncoder.ObjectClass.LAND)) {
+                lands = lands.add(1);
+            } else if (IInterstellarEncoder(interstellarEncoder).getObjectClass(tokenId) == uint8(IInterstellarEncoder.ObjectClass.APOSTLE)) {
+                apostles = apostles.add(1);
+            }
+        }
+    }
 }
 
