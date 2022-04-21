@@ -124,8 +124,8 @@ contract EvolutionTeller is Initializable, LPTokenWithReward {
                 apostles = apostles.add(1);
             }
         }
-        lands = lands.mul(1 ether);
-        apostles = apostles.mul(1 ether);
+        lands = lands.mul(landVoteRate).mul(1 ether);
+        apostles = apostles.mul(apostleVoteRate).mul(1 ether);
     }
 }
 
